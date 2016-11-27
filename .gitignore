@@ -45,3 +45,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+_constants.inc
+help_check.php5
+help_stats.php5
+test.php5
+zzz_gets.php5
+*.log
