@@ -47,9 +47,8 @@ Temporary Items
 .apdisk
 
 
-_constants.inc
-help_check.php5
-help_stats.php5
+*.inc
+help_*
 test.php5
 zzz_gets.php5
 *.log
