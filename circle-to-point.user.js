@@ -2,7 +2,7 @@
 // @id             iitc-plugin-circle-to-point@circletopoint
 // @name           IITC plugin: Circle to point
 // @category       Portal Info
-// @version        0.1.1.20160301.140000
+// @version        0.1.1.20161212.140000
 // @namespace      
 // @updateURL      
 // @downloadURL    
@@ -120,6 +120,15 @@ window.plugin.circleToPoint.traceCircle = function(couple, index) {
 	var dist = coord.distanceTo(couple['Circle'].getLatLng());
 	var formattedDist = window.plugin.circleToPoint.formatDistance(dist);
 
+	var latlngs = new Array(couple['Point'].getLatLng(), couple['Circle'].getLatLng());
+    var currentAxe = new L.GeodesicPolyline(latlngs, {
+            stroke: true,
+            color: window.plugin.circleToPoint.couleurs[index%10],
+            weight: 3,
+            fill: true,
+            fillColor: null //same as color by default
+        });    
+
 	var currentPointCircle = L.geodesicCircle(coord, dist, {
 		  fill: true,
 		  color: window.plugin.circleToPoint.couleurs[index%10],
@@ -147,6 +156,9 @@ window.plugin.circleToPoint.traceCircle = function(couple, index) {
 		  
 	map.addLayer(currentPointCircle);
 	window.plugin.circleToPoint.circles.push(currentPointCircle);
+	
+	map.addLayer(currentAxe);
+	window.plugin.circleToPoint.circles.push(currentAxe);
 }
 
 window.plugin.circleToPoint.traceCircles = function() {
@@ -172,8 +184,17 @@ window.plugin.circleToPoint.removeCircleLocation = function() {
 window.plugin.circleToPoint.addMarkers = function(point_latlng, circle_latlng, nom) {
 	var index = window.plugin.circleToPoint.couples.length;
 	var currentPointLocMarker = createGenericMarker (point_latlng, window.plugin.circleToPoint.couleurs[window.plugin.circleToPoint.couples.length%10],{draggable:true, 'id':index});
-	var currentCircleLocMarker = createGenericMarker (circle_latlng,'#444',{draggable:true, 'id':index});
 	
+	var iconUrl = 'https://upload.wikimedia.org/wikipedia/commons/d/d7/Green_dot_7px.gif';
+    var iconSize = 10;
+    var opacity = 1.0;
+	var circleIcon = L.icon({
+          iconUrl: iconUrl,
+          iconSize: [iconSize,iconSize],
+          iconAnchor: [iconSize/2,iconSize/2]
+        });
+    var currentCircleLocMarker = L.marker(circle_latlng, {icon: circleIcon, draggable: true, 'id':index});
+ 	
     currentPointLocMarker.on('drag', function(e) {
 		window.plugin.circleToPoint.updateDistance(e.target.options.id);
 	});
