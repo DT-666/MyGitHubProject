@@ -123,7 +123,8 @@
 		else
 		{
 			$sleep = 0;
-			
+			/*
+			// Désactivé tant que bug non corrigé sur la regexp de didungar date : 2017-02-04
 			echo "Récupération du $date_min au  $date_max\n";
 			$count_DiD = getUserCaptureFromDiD($db, S_USER_RQST_001, $timestampStart * 1000, $timestampEnd * 1000, $sleep);
 			$count_DiD += getUserCaptureFromDiD($db, S_USER_RQST_002, $timestampStart * 1000, $timestampEnd * 1000, $sleep);
@@ -131,7 +132,7 @@
 			$count_DiD += getUserCaptureFromDiD($db, S_USER_RQST_004, $timestampStart * 1000, $timestampEnd * 1000, $sleep);			
 			$count_DiD += getUserCaptureFromDiD($db, S_USER_RQST_005, $timestampStart * 1000, $timestampEnd * 1000, $sleep);
 			writeLog($fp, 'Message(s) récupéré(s) : '.$count_DiD);
-			echo 'Message(s) récupéré(s) : '.$count_DiD."\n";
+			echo 'Message(s) récupéré(s) : '.$count_DiD."\n";*/
 			
 		}
 		
