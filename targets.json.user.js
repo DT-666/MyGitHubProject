@@ -53,8 +53,8 @@ window.plugin.targets_json.menuIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUh
 window.plugin.targets_json.enlIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAXCAYAAADtNKTnAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AIWFCQzgDVhHQAAASFJREFUOMul1EsrRVEABeDvXo9cQkIpMiIkmUhkYKSUYiolU3MzQ3/FH2Cs/BI/wISB95vJuuV5r3vPmuxzdnuvs9ba6+wWtdGFVrzUWlSuQ7KCSywUISlHxQmWmyVpQQkbOCqiBM6whH7caxBDuMM1RnGb581/CNCGXkyhL3OtIVhL2Jd/be7EOp7xlvEBNyGYwxXOs/YHZuP3ETvpSBW7sXKFxXoWBrP5KUd7EOKXZFOKrS8o1SCdjPwLnEbhQz7wjoHYrYsK9pJJb8atqCr/94gnomAs75shqjTSk4lk0o2ezK02WraqkkosdDRTezmZatWHmyVpwwi2P7W3YZIy5nFYRMlrSriPY01gPMHeFLnZqphRANMJtBDaf/vhvuMDjog7/oXbD3gAAAAASUVORK5CYII=';
 window.plugin.targets_json.resIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAZCAYAAADXPsWXAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AIWFCw01oh+tgAAAiVJREFUOMuV1Ftoj3EYB/DP+2/6O0zRZqVYSW6cdkFyLDezpJTIITmUwi2FEiWlhmuUQzncOaQmXJDUbkSJ3FBCOWxsEbLNZntd/J+Xd7P589Tb7/0dnu/v93yf7/Mk2IMZ6NPfhuGRpHBJ2rcCs9CLdMC5zgosxzx8HLBZiVfS4gs6x2AxijmQBKPQW0APzqIadfGq6ZiEb3S2hMMiTIv9majBDiSFQB2BNXiDd2iJsR5zMRvPc+tvcQTDoSL3/B8xXsUXjAwOtuETrqAT37EF3ZljBtKHNnzFLZyI9YVYh1O4E2v12ISXwQm4iwuRjf1oxVGM7s9zdYK9kYDDGIed6MiH04PGANmLKbj2O9T2JWjAAZxGR/6K7CVyqVuGJwHcXsqS1yXyk/zFO9FR8KeluI6NaEZVxL8BF0l/DHQYDCSzCaEHmIqxg6i1LEhb6EKMn4c6+DeQe7gd/zfweKiDFYOAFnPFWMiNyb+C1GBXqPdZqLas5RUL47O0hWaSMv592TMLob58/TzEA0wsA1KbXXQNXdgdKr0Xqcx/Z6JV5G073kdVWxDMpzgWBXYp5l05kHE5Cg5FKK1YlaHWoSkcLmMpVkdFp9G0KjEG52LtYXTEvCW1OBkHmjEf+2LeiDm4WZonTZg8oN5+WRUOhuNTbI2utj5uTnGcpKYM4UkxSOsttcHkfACmQf5o/2Fr8SGcu7FZoTDs31yTfuE14D5WDrEPfgIWYpS6k5SpcwAAAABJRU5ErkJggg==';
 
-window.plugin.targets_json.debug = false;
-window.plugin.targets_json.debug_level = window.DEBUG_WARN;
+window.plugin.targets_json.debug = true;
+window.plugin.targets_json.debug_level = window.DEBUG_ALL;
 
   /*************/
  /* Highlight */
@@ -210,6 +210,7 @@ window.plugin.targets_json.optPaste = function() {
     var promptAction = prompt('Coller votre JSON.', '');
     if(promptAction !== null && promptAction !== '') {
 		try {
+			var portals_old_tagged = JSON.parse(window.plugin.targets_json.getLocalStorage(window.TARGETS_KEY));
 			var portals_tagged = JSON.parse(promptAction);
 			var result = '{';
 			for	(index = 0; index < portals_tagged['portals'].length; index ++) {
@@ -227,21 +228,55 @@ window.plugin.targets_json.optPaste = function() {
 					var guid = window.findPortalGuidByPositionE6(value.lat, value.lng);
 					if(guid) {
 						result += '"' + guid + '":{';
+						value.id = guid;
 					}
 					else {
 						result += '"' + value['lat'] + "." + value['lng'] + '":{';
+						value.id = value['lat'] + "." + value['lng'];
 					}
 				}
 				for (user in portals_tagged['portals'][index]) {
 					if ( (portals_tagged['portals'][index][user] === 'res') || (portals_tagged['portals'][index][user] === 'enl') ){
 						result += '"' + user + '":"' + portals_tagged['portals'][index][user] + '",';
 					}
-				}	
+				}
+				for (user in portals_old_tagged[value.id]) {
+					if ( (portals_old_tagged[value.id][user] === 'res') || (portals_old_tagged[value.id][user] === 'enl') ){
+						result += '"' + user + '":"' + portals_old_tagged[value.id][user] + '",';
+					}
+					portals_old_tagged[value.id]['added'] = true;
+				}
 				result += '"name":"' + value['name'] + '",';
 				result += '"lat":"' + value['lat'] + '",';
 				result += '"lng":"' + value['lng'] + '"';
 				result += '}';
 			}
+			
+			//Dédoublonner a faire
+			// si portal id au dessus ne rien faire
+			for (portalId in portals_old_tagged) {
+				if (! portals_old_tagged[portalId]['added']) {
+					if (portalId == 'undefined') {
+						portalId = portals_old_tagged[portalId]['lat'] + "." + portals_old_tagged[portalId]['lng'];
+					}
+					result += ',';
+					result += '"' + portalId + '":{';
+
+					for (user in portals_old_tagged[portalId]) {
+						if ( (portals_old_tagged[portalId][user] === 'res') || (portals_old_tagged[portalId][user] === 'enl') ){
+							result += '"' + user + '":"' + portals_old_tagged[portalId][user] + '",';
+						}
+					}
+					if (portals_old_tagged[portalId]['name']) {
+						name = portals_old_tagged[portalId]['name'].replaceAll('&', '&amp;');
+						result += '"name":"' + name + '",';
+					}
+					result += '"lat":"' + portals_old_tagged[portalId]['lat'] + '",';
+					result += '"lng":"' + portals_old_tagged[portalId]['lng'] + '"';
+					result += ' }';
+				}
+			}	
+			
 			result += '}';
 			window.plugin.targets_json.debugAlert('Json:', result, window.DEBUG_ALL);
 			// On écrase la liste courante
