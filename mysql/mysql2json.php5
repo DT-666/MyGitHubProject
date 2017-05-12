@@ -75,7 +75,7 @@
 <?php 
 	if (array_key_exists('users', $_POST) && $users !== '')
 	{
-		echo readDatas($users, $format); 
+		echo readDatas($users, $countries, $format); 
 	}
 ?>
 </textarea>
@@ -269,12 +269,13 @@ exit; // nécessaire pour être certain de ne pas envoyer de fichier corrompu
 	return $result;
 }
 
-function readDatas($user, $format)
+function readDatas($user, $city, $format)
 {	
 	$users = array_unique(explode (',', $user));
 
 	$result = addLine('{"portals":[', 0, $format);
 	$first = true;
+	$query = "";
 	
 	$dbhostname = S_DB_HOSTNAME;
 	$dbname = S_DB_NAME;
@@ -302,7 +303,7 @@ function readDatas($user, $format)
 			$queryFromUser .= " left outer join (select id_portal, user_name as 'USER' from portals_users where user_name = '".$users[$key]."') pu$key on p.id = pu$key.id_portal";
 		}
 
-		$query = $querySelect.$querySelectUser.$queryFrom.$queryFromUser." order by lat, lng";
+		$query = $querySelect.$querySelectUser.$queryFrom.$queryFromUser." WHERE p.CITY like '".$city."%' order by lat, lng";
 		$resultsQuery = $db->query($query);
 		$lines = $resultsQuery->fetchAll();
 		foreach ($lines as $key => $line)
@@ -339,6 +340,7 @@ function readDatas($user, $format)
 	} 
 	catch (PDOException $e) 
 	{
+		echo $query;
 		echo 'Exception BDD reçue:'.$e->errorInfo()."\n";
 	}
 	$result .= addLine(']}', 0, $format);
