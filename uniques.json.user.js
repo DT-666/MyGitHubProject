@@ -79,16 +79,19 @@ window.plugin.uniques_json.default_name = '#TOBECOMPLETED#';
 window.plugin.uniques_json.import_element = 'b';
 window.plugin.uniques_json.import_element_data = 'black';
 
+window.plugin.uniques_json.load_portals = false;
+
 window.plugin.uniques_json.blackIcon = 'data:image/png;base64,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';
 window.plugin.uniques_json.pinkIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAdCAYAAAB1yDbaAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAE2DAABNgwE/cbFwAAAAB3RJTUUH4AMGEC0GbTTIhAAAAvZJREFUOMullE1oHVUUx3/nzp2Zl3mTVJrYaGuT0mII6ELQRaFIUj9QFCriWgRxqytdFLcuXFUX3RZcWeRRGoVoiTZE0mgtgqiUFm0jBikaE9O+zsyb92bmni4eiQmaal//q3M553c5H/dcSafnjekLBqq1ZoYfFPGRCU2nZj2tnAcKiIr1XP2Fw1U2PS/aKXyp1wIJg46kU7NPuVb+OTAnYfAeRi6K0+dUeRr0XpBlEZlTmBL0QW0XR1WYFGtftVqWh8qLlwEm7UPjk+L7papaNqQoHEHkXVcUQXn5Z1DFHzuw26DsrNZuoKpIN3oTuEmqgShoVeGSDJfldYuRK3bP/dj9o2AtqLKtAh9/fAy3+heoWzXieR/Z/aNVWKtRDwJE5F85QYj8gCiOMfftWpT++ILBmNFKxDv17XneOPkBzTzH+D5iLeJbxFqwHllZ8Pbpk7z/xTT1vmiX1MJBq2V1WAR2RBGDUR3z+zL5tR9waYY6hxiDRBFueIjhe3bSH4Q4V8WoHrDAiBHDxPjDPD4wRPbVN7SrCiMGEcGp4q5fx/65wmuPPYI3upe8KMCYQYOQADjncHmbVpbRuPo1S8kK1ngsJSucuHQWXzyKG02qv9vQNoJ82e2IQC3sdlQMnpiNOYfGRwXMjoHuNEQUuCLZmYXApa1PUH1G85zix0vki79gxGDEAEqnKujbO0J48FHwPBBO43mvC0D68dyIluWbCC9pku6ufv2NamUVbbeRMMQODWJGHkD642uonsKY4/GLT/y0MdT0s3N92mqNie/v07S1zzk9iqtiPC831ntHwnBRi3LJ1Pyr0fMTN5ffOgbpp/P/eBDZwvcWIGnMZElj5pXWue/8zf7kw2lasxe2QumZhS3npDGTJ42ZlzcuPXt+i99sPtSfPcTtFD15cHt46xKpDwjQ3C7GcBf6P/BAr3BvaWvzZu9puz9W1821O4ar29T63zV3ynVrTw9w0XvNmrXvAm53uj8BDN952lFtfV3j7UJuATbPO0KGYdypAAAAAElFTkSuQmCC';
-window.plugin.uniques_json.redIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAVCAYAAAB2Wd+JAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AMGEB8T7Zl4HgAAAZBJREFUOMutlLFrFFEQxn/z9u3daQ4iapGoKQRJGlMYQRSs8g8o2Ag2FmopgjYiadJaikUKsbCUFNYRwcrGKqISvBM0iKApPBdzu9nd91l4R07YXHLiNI8Z3o/3fTPDg4qQdKjV+nCJUaPdbs9PzU/kw+74qmLazY7Xaw1/c2lqYvzI/nEfW3bi6OznK7NPw1AwYyN1kYDoeih1SjHf13+8X1pcmfmYfKon96+tlpXgyrc7vpt3MB2+u7VZelezkJfhMs7eWKQbwLvqF8ufSCIU2kcJCBD1fFNn4gPpk9uPp19Vgs5iDEN9R/pzhIK4zDRXpEy7UbptBnkXikxNN+qozHqq+MfYEVTPmLYt7r4AhVIMA/hq2FuwL2BnhWaGgpON04qiFyjYI4d/6YKtQbgIugrM7QieP3hPDf+ah7daCwPlBwvPTj6XsmWkyUqwJ7Pfg7Bdd2vAOe9rTb9b9weTxQurAegAnf8/jr+XbY+gcy4gMehvT+DYWHPDzBj5B0iSZD35lWz18wiODcgWEH4DzLCV7iDTeR4AAAAASUVORK5CYII=';
+//window.plugin.uniques_json.flagIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAVCAYAAAB2Wd+JAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AMGEB8T7Zl4HgAAAZBJREFUOMutlLFrFFEQxn/z9u3daQ4iapGoKQRJGlMYQRSs8g8o2Ag2FmopgjYiadJaikUKsbCUFNYRwcrGKqISvBM0iKApPBdzu9nd91l4R07YXHLiNI8Z3o/3fTPDg4qQdKjV+nCJUaPdbs9PzU/kw+74qmLazY7Xaw1/c2lqYvzI/nEfW3bi6OznK7NPw1AwYyN1kYDoeih1SjHf13+8X1pcmfmYfKon96+tlpXgyrc7vpt3MB2+u7VZelezkJfhMs7eWKQbwLvqF8ufSCIU2kcJCBD1fFNn4gPpk9uPp19Vgs5iDEN9R/pzhIK4zDRXpEy7UbptBnkXikxNN+qozHqq+MfYEVTPmLYt7r4AhVIMA/hq2FuwL2BnhWaGgpON04qiFyjYI4d/6YKtQbgIugrM7QieP3hPDf+ah7daCwPlBwvPTj6XsmWkyUqwJ7Pfg7Bdd2vAOe9rTb9b9weTxQurAegAnf8/jr+XbY+gcy4gMehvT+DYWHPDzBj5B0iSZD35lWz18wiODcgWEH4DzLCV7iDTeR4AAAAASUVORK5CYII=';
+window.plugin.uniques_json.redIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAdAQMAAABPBqSZAAAABlBMVEWVMzOgEAvouz2fAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfgCxsSJSoGsj6CAAAAKUlEQVQI12NgYGBgZGBgdWDgTWCQNGCQLQAx+B8wsB9gYG6AIkYGUhEAUA4FR0Op0e8AAAAASUVORK5CYII=';
 window.plugin.uniques_json.enlIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAXAQMAAADX+jakAAAABlBMVEVvcnQAAAA7ioAkAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAA3SURBVAjXY2AAgQYgPgDEC4C4A4hvALEYAwP7GwYGCQMg/QDIlwHiEKh8A1TtAiQ2zIwGBhgAABbwCxE3bOxTAAAAAElFTkSuQmCC';
 window.plugin.uniques_json.resIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAZAgMAAACqUC0EAAAACVBMVEUAANwAAAAAAAGYB7BnAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAABPSURBVAjXfcsxDoAACAPAMrA7yH/wB5DQ3Uf5YMvoYprc0KaIcSbIkKUkmjErV+ShXoM8XWv5rFZ/9keTXCMqAL9qAKu+AYyn9EeoWvXBC4u0FybeaiQ6AAAAAElFTkSuQmCC';
 window.plugin.uniques_json.menuIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAATCAYAAACQjC21AAAABGdBTUEAALGPC/xhBQAAAvZJREFUOMutlGtIE2AYhc/c1OkqSVxoVFRqOZfzkm1lhXgpFfNHEEFZRFazssiaYRTizDIIyy4QBEEWMy/DppaltlDQtKktu1ipm5U4ndc227xsrrdfBhLkqM7f7/B8h/c778eEnUo7k8rhenKtHR868V8UHRdls8fnYI/p6HHxGj7PzwEA3rar/x3o588/OWE2o3+wZ4WAH/L3wNfvX8E0YXDluDgnfe3R4eKFSxn/PLuDyUkpFtt3CgoJoI2bwyaIbH8MwQKAQ4eTJLpevU0QxKu5lJ2rYzAYxhlD6Lp1UqvVhvHxCUxOTTnm3shlzAlMSEhQqFQv6xZ7eeXxBX7wXrUcHFfOJJPFtDqA5o+Pm2GxTIHFYjFH9CPNKSnJplGDYWh4aKh/aGTwveciL8P0D+u0srqudNZtWdmZsg1hokQ2m40CWQEUinIsdHdH5eNyxMXF415+PlxcXeDs7Ai9fhCv29RobVHDydnJ5O/P25uedq7sF1BZW4XoiFhkXciQenh4ZCYm7obVaoNcLkdj4wsECoJgMn1H+4eP0Gq0GBgYxNKlSxATs0VyXppzdYYzK6H6TTNCAoUokstStVrtZaNxzLGhoR4ikQhcLhetLa/Q1KTCArd5EApFz+/flW1jMBiTdr2ucMPaEW/f5ZSdIyVlbRUFhwpozDxMo8YBKn+siAcA9bvWuXvY0qbCk+qKpG+j39wjIyORLBajX9eHMeMYrl27DiaTiX59nw8AhASE/jlVR/dHAEBEVHjv1tgo6tP3UGlZIa0PE1p8V6+k1Txf+trbRSdOpWjsLjIRsQXBAdShaac9+3ZRUYnsEADICvMfrfBeRuERm+j2nVvU1dPpat9miPc3nU6XkDQ7Q9HQVMsGgGplJQCgWF4Q4+fvQ0UlD+jAkYNr5/ooIDlz0mnHzu2Ud/PKegBgOs1uAAA8ranwjYndQsdOHM6cM13xw0IGEXEA4Iuu+7dzzedPM2NxSz8reYb/pbp6JQAg8/y53/b6J5j6Q6SExa7PAAAAAElFTkSuQmCC';
 
 // Trace dans la console
 window.plugin.uniques_json.debug = false;
-window.plugin.uniques_json.debug_level = window.DEBUG_ALL;
+window.plugin.uniques_json.debug_level = window.DEBUG_ERR;
 
   /**********/
  /* Portal */
@@ -278,13 +281,15 @@ window.plugin.uniques_json.highlighter = function() {
 				}
 				else {
 					// On mémorise le portail
-					uniqueInfo = JSON.parse('{}');
-					if (! portalName) portalName = window.plugin.uniques_json.default_name;
-					uniqueInfo.name = portalName.replaceAll('"', '&#34;');
-					uniqueInfo.lat = portalLat;
-					uniqueInfo.lng = portalLng;
-					plugin.uniques_json.uniques[portalId] = uniqueInfo;
-					window.plugin.uniques_json.sync(portalId);
+					if (window.plugin.uniques_json.load_portals) {
+						uniqueInfo = JSON.parse('{}');
+						if (! portalName) portalName = window.plugin.uniques_json.default_name;
+						uniqueInfo.name = portalName.replaceAll('"', '&#34;');
+						uniqueInfo.lat = portalLat;
+						uniqueInfo.lng = portalLng;
+						plugin.uniques_json.uniques[portalId] = uniqueInfo;
+						window.plugin.uniques_json.sync(portalId);
+					}
 				}
 			}
 		}
@@ -301,14 +306,15 @@ window.plugin.uniques_json.highlighter = function() {
 			if ((! window.plugin.uniques_json.uniques[portalId]) && (! window.plugin.uniques_json.uniques[portalLat + '.' + portalLng])) {
 				portalName = p.options.data.title;
 				// On le rajoute à la liste
-				uniqueInfo = JSON.parse('{}');
-				if (! portalName) portalName = window.plugin.uniques_json.default_name;
-				uniqueInfo.name = portalName.replaceAll('"', '&#34;');
-				uniqueInfo.lat = portalLat;
-				uniqueInfo.lng = portalLng;
-				plugin.uniques_json.uniques[portalId] = uniqueInfo;
-				window.plugin.uniques_json.sync(portalId);
-				
+				if (window.plugin.uniques_json.load_portals) {
+					uniqueInfo = JSON.parse('{}');
+					if (! portalName) portalName = window.plugin.uniques_json.default_name;
+					uniqueInfo.name = portalName.replaceAll('"', '&#34;');
+					uniqueInfo.lat = portalLat;
+					uniqueInfo.lng = portalLng;
+					plugin.uniques_json.uniques[portalId] = uniqueInfo;
+					window.plugin.uniques_json.sync(portalId);
+				}	
 				window.plugin.uniques_json.highlighterOne(portalId, false, portalLat, portalLng, portalName);
 			}
 			else {
@@ -636,6 +642,7 @@ window.plugin.uniques_json.saveParams = function() {
 			break;
 		 }
 	}	
+	window.plugin.uniques_json.load_portals = document.getElementById('load_portals_json').checked;
 	if (window.plugin.uniques_json.user == '') window.plugin.uniques_json.user = window.PLAYER.nickname;
 	
 	var result = '{"params":{"user":"';
@@ -648,6 +655,8 @@ window.plugin.uniques_json.saveParams = function() {
 	result += window.plugin.uniques_json.flag_captured;
 	result += '","flag_uncaptured":"';
 	result += window.plugin.uniques_json.flag_uncaptured;
+	result += '","load_portals":"';
+	result += window.plugin.uniques_json.load_portals;
 	result += '"}}';
 	try
 	{
@@ -685,6 +694,9 @@ window.plugin.uniques_json.optParams = function() {
 	result += window.plugin.uniques_json.radio('enl', 'ENL', 'icon_uncaptured_json', window.plugin.uniques_json.flag_uncaptured);
 	result += window.plugin.uniques_json.radio('res', 'RES', 'icon_uncaptured_json', window.plugin.uniques_json.flag_uncaptured);
 	result += '</div><br/>';
+	result += '<div>Chargement des données : <input id="load_portals_json" name="load_portals_json" type="checkbox"'; 
+	if (window.plugin.uniques_json.load_portals)  result += ' checked '
+	result += '"/></div>';
 
 	dialog({
 		html: result,
