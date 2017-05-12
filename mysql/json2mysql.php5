@@ -36,6 +36,11 @@
 if ($json != '')
 {
 	$fp = getFile('json2mysql');
+	date_default_timezone_set('Europe/Paris');
+	$date_lancement = date("Y-m-d H:i:s");
+	$date_termine = date("Y-m-d H:i:s");
+	writeLog($fp, $date_lancement.'-Lancement');
+	echo 'Lancement:'.$date_lancement."\n";
 	$json_d = json_decode($json, true);
 	if ($json_d != null && $json_d['portals'])
 	{
@@ -47,6 +52,7 @@ if ($json != '')
 			$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_NAMED);
 			$db->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 			$db->exec("SET NAMES 'UTF8'");
+
 			foreach ($json_d['portals']as $key => $val) 
 			{
 				$guid = $json_d['portals'][$key]['id'];
@@ -83,6 +89,9 @@ if ($json != '')
 			//throw new PDOException('Error  : '.$e->errorInfo());
 		}
 	}
+	$date_termine = date("Y-m-d H:i:s");
+	writeLog($fp, $date_termine.'-Terminé'."\n");
+	echo 'Terminé:'.$date_termine."\n";	
 	fclose ($fp);
 }
 
