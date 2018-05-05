@@ -1,22 +1,32 @@
 <?php
+define('S_ADD_USER', 'ADD_USER');
+define('S_UPDATE_USER_TEAM', 'UPDATE_USER_TEAM');
+define('S_ADD_PORTAL', 'ADD_PORTAL');
+define('S_UPDATE_PORTAL_ID', 'UPDATE_PORTAL_ID');
+define('S_UPDATE_PORTAL_NAME', 'UPDATE_PORTAL_NAME');
+define('S_UPDATE_PORTAL_INFO', 'UPDATE_PORTAL_INFO');
+//define('S_UPDATE_PORTAL_GEOLOCATION', 'UPDATE_PORTAL_GEOLOCATION');
+define('S_ADD_RELATION', 'ADD_RELATION');
+
+//define('S_
 
 /* BDD */
-function insertUser($db, $fp, $user, $team)
+function insertUser($db, $user, $team, $position, $max_position)
 {
 	// Gestion user
 	if ((! empty($user)) && ($user != '[uncaptured]') && ($user != '__JARVIS__') && ($user != '__ADA__'))
 	{
-		$query = "SELECT * FROM USERS WHERE NAME='$user'";
+		$query = "SELECT * FROM users WHERE NAME='$user'";
 		$results = $db->query($query);
 		$line = $results->fetch();
 		if($line === false)
 		{
 			//On insère car nouvelle valeur
-			$query = "INSERT INTO USERS(NAME, TEAM) VALUES ('$user', '$team')";
+			$query = "INSERT INTO users(NAME, TEAM) VALUES ('$user', '$team')";
 			$results = @$db->exec($query);
 			mysqlError($db, $results) ;
-			writeLog($fp, $query." ($results)");
-			echo "&nbsp;&nbsp;@$user ($team) - inserted\n";
+			writeLog($db, $position, $max_position, S_ADD_USER, $user, null);
+			//echo "&nbsp;&nbsp;@$user ($team) - inserted\n";
 		} 
 		else
 		{
@@ -24,66 +34,65 @@ function insertUser($db, $fp, $user, $team)
 			if ($team !== 'UNKNOWN')
 			{
 				if ((! array_key_exists('TEAM', $line)) || empty($line['TEAM']) || $line['TEAM'] === 'UNKNOWN') {
-					$query = "UPDATE USERS set TEAM = '$team' WHERE NAME = '$user'";
+					$query = "UPDATE users set TEAM = '$team' WHERE NAME = '$user'";
 					$results = @$db->exec($query);
 					mysqlError($db, $results) ;
-					writeLog($fp, $query." ($results)");
+					writeLog($db, $position, $max_position, S_UPDATE_USER_TEAM, $user, null);
 				}
 			}
 		}
 	}
 }
 
-function insertPortal($db, $fp, $guid, $lat, $lng, $name)
+function insertPortal($db, $guid, $lat, $lng, $name, $position, $max_position)
 {
-	$name = SQLite3::escapeString($name);
-	$query = "SELECT * FROM PORTALS WHERE ID='$guid'";
+	$name = $db->quote($name);
+	$query = "SELECT * FROM portals WHERE ID='$guid'";
 	$results = $db->query($query);
 	$line = $results->fetch();
-	if($line === false)
+	if($line === false)// GUID non trouvé
 	{
-		$query = "SELECT * FROM PORTALS WHERE LAT='$lat' AND LNG='$lng'";
+		$query = "SELECT * FROM portals WHERE LAT='$lat' AND LNG='$lng'";
 		$results = $db->query($query);
 		$line = $results->fetch();
-		if($line === false)
+		if($line === false) // PORTAIL non trouvé
 		{
-			$cityCountry = getGeoInfo($fp, $lat, $lng);
-			$city = SQLite3::escapeString($cityCountry[0]);
-			$country = SQLite3::escapeString($cityCountry[1]);
-			$code = SQLite3::escapeString($cityCountry[2]);
+			$cityCountry = getGeoInfo($lat, $lng);
+			$city = $db->quote($cityCountry[0]);
+			$country = $db->quote($cityCountry[1]);
+			$code = $db->quote($cityCountry[2]);
 			//On insère car nouvelle valeur
 			$query = '';
 			if (empty($city))
 			{
 				if (empty($country))
 				{
-					if (empty($code)) $query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME) VALUES ('$guid', '$lat', '$lng', '$name')";
-					else $query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME, POSTAL_CODE) VALUES ('$guid', '$lat', '$lng', '$name', '$code')";
+					if (empty($code)) $query = "INSERT INTO portals(ID, LAT, LNG, NAME) VALUES ('$guid', '$lat', '$lng', $name)";
+					else $query = "INSERT INTO portals(ID, LAT, LNG, NAME, POSTAL_CODE) VALUES ('$guid', '$lat', '$lng', $name, $code)";
 				}
 				else
 				{
-					if (empty($code)) $query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME, COUNTRY) VALUES ('$guid', '$lat', '$lng', '$name', '$country')";
-					else $query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME, COUNTRY, POSTAL_CODE) VALUES ('$guid', '$lat', '$lng', '$name', '$country', '$code')";
+					if (empty($code)) $query = "INSERT INTO portals(ID, LAT, LNG, NAME, COUNTRY) VALUES ('$guid', '$lat', '$lng', $name, $country)";
+					else $query = "INSERT INTO portals(ID, LAT, LNG, NAME, COUNTRY, POSTAL_CODE) VALUES ('$guid', '$lat', '$lng', $name, $country, $code)";
 				}
 			}
 			else
 			{
 				if (empty($country))
 				{
-					if (empty($code)) $query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME, CITY) VALUES ('$guid', '$lat', '$lng', '$name', '$city')";
-					else $query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME, CITY, POSTAL_CODE) VALUES ('$guid', '$lat', '$lng', '$name', '$city', '$code')";
+					if (empty($code)) $query = "INSERT INTO portals(ID, LAT, LNG, NAME, CITY) VALUES ('$guid', '$lat', '$lng', $name, $city)";
+					else $query = "INSERT INTO portals(ID, LAT, LNG, NAME, CITY, POSTAL_CODE) VALUES ('$guid', '$lat', '$lng', $name, $city, $code)";
 				}
 				else
 				{
-					if (empty($code)) $query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME, CITY, COUNTRY) VALUES ('$guid', '$lat', '$lng', '$name', '$city', '$country')";
-					else $query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME, CITY, COUNTRY, POSTAL_CODE) VALUES ('$guid', '$lat', '$lng', '$name', '$city', '$country', '$code')"; 
+					if (empty($code)) $query = "INSERT INTO portals(ID, LAT, LNG, NAME, CITY, COUNTRY) VALUES ('$guid', '$lat', '$lng', $name, $city, $country)";
+					else $query = "INSERT INTO portals(ID, LAT, LNG, NAME, CITY, COUNTRY, POSTAL_CODE) VALUES ('$guid', '$lat', '$lng', $name, $city, $country, $code)"; 
 				}
 			}
-			//$query = "INSERT INTO PORTALS(ID, LAT, LNG, NAME, CITY, COUNTRY) VALUES ('$guid', '$lat', '$lng', '$name', '$city', '$country')";
 			$results = @$db->exec($query);
-			mysqlError($db, $results) ;
-			writeLog($fp, $query." ($results)");
-			echo "$lat - $lng - $name inserted\n";
+			mysqlError($db, $results);
+			writeLog($db, $position, $max_position, S_ADD_PORTAL, null, $guid);
+			//echo "$lat - $lng - $name inserted\n";
 		}
 		else
 		{
@@ -94,51 +103,59 @@ function insertPortal($db, $fp, $guid, $lat, $lng, $name)
 				@$db->exec($query);
 
 				//On met à jour le guid
-				$query = "UPDATE PORTALS set ID = '$guid' WHERE ID = '".$line['ID']."'";
+				$query = "UPDATE portals set ID = '$guid' WHERE ID = '".$line['ID']."'";
 				$results = @$db->exec($query);
 				mysqlError($db, $results) ;
-				writeLog($fp, $query." ($results)");
 				
-				$query = "UPDATE PORTALS_USERS set ID_PORTAL = '$guid' WHERE ID_PORTAL = '".$line['ID']."'";
+				$query = "UPDATE portals_users set ID_PORTAL = '$guid' WHERE ID_PORTAL = '".$line['ID']."'";
 				$results = @$db->exec($query);
 				mysqlError($db, $results) ;
-				writeLog($fp, $query." ($results)");
 
 				$query = "SET FOREIGN_KEY_CHECKS = 1";
 				@$db->exec($query);
-
-				echo "&nbsp;&nbsp;$guid - $name ID updated\n";
+				writeLog($db, $position, $max_position, S_UPDATE_PORTAL_ID, null, $guid);
+				//echo "&nbsp;&nbsp;$guid - $name ID updated\n";
 			}
 			else
 			{
 				$guid = $line['ID'];
-				echo '.'."\n";
+				//echo '.'."\n";
 			}
 			
 			// MAJ du name
-			if (($line['NAME'] == '#TOBECOMPLETED#') && ($name != '#TOBECOMPLETED#'))
+			if (($line['NAME'] == '#TOBECOMPLETED#') && ($name != $db->quote('#TOBECOMPLETED#')))
 			{
-				$query = "UPDATE PORTALS set NAME = '$name' WHERE ID = '".$guid."'";
+				$query = "UPDATE portals set NAME = $name WHERE ID = '".$guid."'";
 				$results = @$db->exec($query);
 				mysqlError($db, $results) ;
-				writeLog($fp, $query." ($results)");
-				echo "&nbsp;&nbsp;$guid - $name NAME updated\n";
+				writeLog($db, $position, $max_position, S_UPDATE_PORTAL_NAME, null, $guid);
+				//echo "&nbsp;&nbsp;$guid - $name NAME updated\n";
 			}
+			else
+			{
+				if (($db->quote($line['NAME']) != $name) && ($name != $db->quote('#TOBECOMPLETED#')))
+				{
+					$query = "INSERT INTO errors (ID, LAT, LNG, NAME, MSG) VALUES ('$guid', '$lat', '$lng', $name, 'Name a updater')";
+					$results = @$db->exec($query);
+					mysqlError($db, $results) ;
+				}
+			}
+			//Si name <> $query = "INSERT INTO errors (ID, LAT, LNG, MSG) VALUES ('$guid', '$lat', '$lng', 'Name. a updater : $name')"; // Attention a '
 
 			// MAJ de city & country
 			if ( (! array_key_exists('CITY', $line)) || (! array_key_exists('COUNTRY', $line)) || (empty($line['CITY'])) || (empty($line['COUNTRY'])) )
 			{
-				$cityCountry = getGeoInfo($fp, $lat, $lng);
-				$city = SQLite3::escapeString($cityCountry[0]);
-				$country = SQLite3::escapeString($cityCountry[1]);
-				$code = SQLite3::escapeString($cityCountry[2]);
+				$cityCountry = getGeoInfo($lat, $lng);
+				$city = $db->quote($cityCountry[0]);
+				$country = $db->quote($cityCountry[1]);
+				$code = $db->quote($cityCountry[2]);
 				$sCityRequest = '';
 				$sCountryRequest = '';
 				$sCodeRequest = '';
 				$sRequest = '';
-				if ( ($city !== null) && (! empty($city)) && (empty($line['CITY'])) ) $sCityRequest = "CITY = '$city'";
-				if ( ($country !== null) && (! empty($country))&& (empty($line['COUNTRY'])) ) $sCountryRequest = "COUNTRY = '$country'";
-				if ( ($code !== null) && (! empty($code)) && (empty($line['POSTAL_CODE'])) ) $sCodeRequest = "POSTAL_CODE = '$code'";
+				if ( ($city !== null) && (! empty($city)) && (empty($line['CITY'])) ) $sCityRequest = "CITY = $city";
+				if ( ($country !== null) && (! empty($country))&& (empty($line['COUNTRY'])) ) $sCountryRequest = "COUNTRY = $country";
+				if ( ($code !== null) && (! empty($code)) && (empty($line['POSTAL_CODE'])) ) $sCodeRequest = "POSTAL_CODE = $code";
 				
 				$sRequest = $sCityRequest;
 				if (empty($sRequest))
@@ -154,11 +171,11 @@ function insertPortal($db, $fp, $guid, $lat, $lng, $name)
 				}
 
 				if (! empty($sRequest)) {
-					$query = "UPDATE PORTALS set ".$sCityRequest.$sCountryRequest." WHERE ID = '".$guid."'";
+					$query = "UPDATE portals set ".$sCityRequest.$sCountryRequest." WHERE ID = '".$guid."'";
 					$results = @$db->exec($query);
 					mysqlError($db, $results) ;
-					writeLog($fp, $query." ($results)");
-					echo "&nbsp;&nbsp;$guid $city/$country/$code CITY/COUNTRY/CODE updated\n";
+					writeLog($db, $position, $max_position, S_UPDATE_PORTAL_INFO, null, $guid);
+					//echo "&nbsp;&nbsp;$guid $city/$country/$code CITY/COUNTRY/CODE updated\n";
 				}
 			}
 		}
@@ -168,10 +185,10 @@ function insertPortal($db, $fp, $guid, $lat, $lng, $name)
 		//MAJ LNG/LAT, a faire manuellement
 		if ($lat !== $line['LAT'] || $lng !== $line['LNG'])
 		{
-			$query = "INSERT INTO ERRORS (ID, LAT, LNG, MSG) VALUES ('$guid', '$lat', '$lng', 'Coord. a updater')";
+			$query = "INSERT INTO errors (ID, LAT, LNG, MSG) VALUES ('$guid', '$lat', '$lng', 'Coord. a updater')";
 			$results = @$db->exec($query);
 			mysqlError($db, $results) ;
-			writeLog($fp, $query." ($results)");
+			//writeLog($fp, $query." ($results)");
 		}
 		
 		// MAJ du guid
@@ -180,47 +197,56 @@ function insertPortal($db, $fp, $guid, $lat, $lng, $name)
 			$query = "SET FOREIGN_KEY_CHECKS = 0";
 			@$db->exec($query);
 				
-			$query = "UPDATE PORTALS_USERS set ID_PORTAL = '$guid' WHERE ID_PORTAL = '".$line['ID']."'";
+			$query = "UPDATE portals_users set ID_PORTAL = '$guid' WHERE ID_PORTAL = '".$line['ID']."'";
 			$results = @$db->exec($query);
 			mysqlError($db, $results);
-			writeLog($fp, $query." ($results)");
 			
 			//On met à jour le guid
-			$query = "UPDATE PORTALS set ID = '$guid' WHERE ID = '".$line['ID']."'";
+			$query = "UPDATE portals set ID = '$guid' WHERE ID = '".$line['ID']."'";
 			$results = @$db->exec($query);
 			mysqlError($db, $results);
-			writeLog($fp, $query." ($results)");
 			
 			$query = "SET FOREIGN_KEY_CHECKS = 1";
 			@$db->exec($query);
-				
-			echo "&nbsp;&nbsp;$guid - $name ID updated\n";
+			writeLog($db, $position, $max_position, S_UPDATE_PORTAL_ID, null, $guid);
+			//echo "&nbsp;&nbsp;$guid - $name ID updated\n";
 		}
 
 		// MAJ du name
-		if (($line['NAME'] == '#TOBECOMPLETED#') && ($name != '#TOBECOMPLETED#'))
+		if (($line['NAME'] == '#TOBECOMPLETED#') && ($name != $db->quote('#TOBECOMPLETED#')))
 		{
-			$query = "UPDATE PORTALS set NAME = '$name' WHERE ID = '".$guid."'";
+
+			$query = "UPDATE portals set NAME = $name WHERE ID = '".$guid."'";
 			$results = @$db->exec($query);
 			mysqlError($db, $results) ;
-			writeLog($fp, $query." ($results)");
-			echo "&nbsp;&nbsp;$guid - $name NAME updated\n";
+			writeLog($db, $position, $max_position, S_UPDATE_PORTAL_NAME, null, $guid);
+			//echo "&nbsp;&nbsp;$guid - $name NAME updated\n";
 		}
+		else
+		{
+			if (($db->quote($line['NAME']) != $name) && ($name != $db->quote('#TOBECOMPLETED#')))
+			{
+				$query = "INSERT INTO errors (ID, LAT, LNG, NAME, MSG) VALUES ('$guid', '$lat', '$lng', $name, 'Name a updater')";
+				$results = @$db->exec($query);
+				mysqlError($db, $results) ;
+			}
+		}
+		//Si name <> $query = "INSERT INTO errors (ID, LAT, LNG, MSG) VALUES ('$guid', '$lat', '$lng', 'Name. a updater : $name')"; // Attention a '
 
 		// MAJ de city & country & postal_code
 		if ( (! array_key_exists('CITY', $line)) || (! array_key_exists('COUNTRY', $line)) || (! array_key_exists('POSTAL_CODE', $line)) || (empty($line['CITY'])) || (empty($line['COUNTRY'])) || (empty($line['POSTAL_CODE'])) )
 		{
-			$cityCountry = getGeoInfo($fp, $lat, $lng);
-			$city = SQLite3::escapeString($cityCountry[0]);
-			$country = SQLite3::escapeString($cityCountry[1]);
-			$code = SQLite3::escapeString($cityCountry[2]);
+			$cityCountry = getGeoInfo($lat, $lng);
+			$city = $db->quote($cityCountry[0]);
+			$country = $db->quote($cityCountry[1]);
+			$code = $db->quote($cityCountry[2]);
 			$sCityRequest = '';
 			$sCountryRequest = '';
 			$sCodeRequest = '';
 			$sRequest = '';
-			if ( ($city !== null) && (! empty($city)) && (empty($line['CITY'])) ) $sCityRequest = "CITY = '$city'";
-			if ( ($country !== null) && (! empty($country))&& (empty($line['COUNTRY'])) ) $sCountryRequest = "COUNTRY = '$country'";
-			if ( ($code !== null) && (! empty($code)) && (empty($line['POSTAL_CODE'])) ) $sCodeRequest = "POSTAL_CODE = '$code'";
+			if ( ($city !== null) && (! empty($city)) && (empty($line['CITY'])) ) $sCityRequest = "CITY = $city";
+			if ( ($country !== null) && (! empty($country))&& (empty($line['COUNTRY'])) ) $sCountryRequest = "COUNTRY = $country";
+			if ( ($code !== null) && (! empty($code)) && (empty($line['POSTAL_CODE'])) ) $sCodeRequest = "POSTAL_CODE = $code";
 			
 			$sRequest = $sCityRequest;
 			if (empty($sRequest))
@@ -236,15 +262,15 @@ function insertPortal($db, $fp, $guid, $lat, $lng, $name)
 			}
 
 			if (! empty($sRequest)) {
-				$query = "UPDATE PORTALS set ".$sRequest." WHERE ID = '".$guid."'";
+				$query = "UPDATE portals set ".$sRequest." WHERE ID = '".$guid."'";
 				$results = @$db->exec($query);
 				mysqlError($db, $results) ;
-				writeLog($fp, $query." ($results)");
-				echo "&nbsp;&nbsp;$guid $city/$country/$code CITY/COUNTRY/CODE updated\n";
+				writeLog($db, $position, $max_position, S_UPDATE_PORTAL_INFO, null, $guid);
+				//echo "&nbsp;&nbsp;$guid $city/$country/$code CITY/COUNTRY/CODE updated\n";
 			}
 			else
 			{
-				echo "&nbsp;&nbsp;$guid NO DATA CITY/COUNTRY/CODE\n";
+				//echo "&nbsp;&nbsp;$guid NO DATA CITY/COUNTRY/CODE\n";
 			}
 		}
 	}
@@ -252,39 +278,47 @@ function insertPortal($db, $fp, $guid, $lat, $lng, $name)
 	return $guid;
 }
 
-function insertRelationUserPortal($db, $fp, $user, $guid)
+function insertRelationUserPortal($db, $user, $guid, $position, $max_position)
 {
 	// Gestion lien portail
 	if ((! empty($user)) && ($user != '[uncaptured]') && ($user != '__JARVIS__') && ($user != '__ADA__'))
 	{
-		$query = "SELECT * FROM PORTALS_USERS WHERE USER_NAME='$user' AND ID_PORTAL='$guid'";
+		$query = "SELECT * FROM portals_users WHERE USER_NAME='$user' AND ID_PORTAL='$guid'";
 		$results = $db->query($query);
 		if($results->fetch() === false)
 		{
 			//On insère car nouvelle valeur
-			$query = "INSERT INTO PORTALS_USERS (USER_NAME, ID_PORTAL, CAPTURED) VALUES ('$user', '$guid', true)";
+			$query = "INSERT INTO portals_users (USER_NAME, ID_PORTAL, CAPTURED) VALUES ('$user', '$guid', true)";
 			$results = @$db->exec($query);
 			mysqlError($db, $results) ;
-			writeLog($fp, $query." ($results)");
-			echo "@$user - $guid inserted\n";
+			writeLog($db, $position, $max_position, S_ADD_RELATION, $user, $guid);
+			//echo "@$user - $guid inserted\n";
 		}
 		else
 		{
-			writeLog($fp, "Lien $user/$guid existant");
+			//writeLog($fp, "Lien $user/$guid existant");
 			//echo "@$user - $guid exist<br/>";
 		}
 	}
 }
 
 /* LOGS */
+function writeLog($db, $current_mel, $last_mel, $action, $user_name, $portal_id)
+{
+//TODO evoluer en mettant la date en php en gmt, bdd en utc
+	$query = "INSERT INTO logs (CURRENT_MEL, LAST_MEL, ACTION, USER_NAME, ID_PORTAL) VALUES ('$current_mel', '$last_mel', '$action', '$user_name', '$portal_id')";
+	$results = @$db->exec($query);
+	mysqlError($db, $results) ;
+}
+/*
 function writeLog($fp, $line)
 {
 	if ($fp !== null)
 	{
 		fputs ($fp, $line."\n");
 	}
-}
-
+}*/
+/*
 function getFile($file)
 {
 	date_default_timezone_set('Europe/Paris');
@@ -298,16 +332,18 @@ function getFile($file)
 	if($file === 'test') return fopen ('logs/test_'.$date_courante.'.log', 'a+');
 	if($file === 'gets') return fopen ('logs/gets_'.$date_courante.'.log', 'a+');
 }
-
+*/
 /* OUTILS */
 $isGeoCodeInfoBurn = false; // Mettre à true pour DEBUG
 $numberGeoCode = 0;
-function getGeoInfo($fp, $lat, $lng)
+function getGeoInfo($lat, $lng)
 {
 	if ((! $GLOBALS['isGeoCodeInfoBurn']) && ($GLOBALS['numberGeoCode'] < 2500)) //limite a 2500 par jour
 	{
 		sleep(0.1); // limite a 10 requetes par seconde
-		$latlng = ($lat/1E6).','.($lng/1E6);
+		$late6 = $lat/1E6;
+		$lnge6 = $lng/1E6;
+		$latlng = "{$late6},{$lnge6}";
 		$returns  = null;
 		$url = S_MAP_HOSTNAME;
 		$postdataPortal = http_build_query(
@@ -332,7 +368,7 @@ function getGeoInfo($fp, $lat, $lng)
 		);
 		$url .= '?'.$postdataPortal;
 		$GLOBALS['numberGeoCode'] ++;
-		writeLog($fp, $url.'&cur_call='.$GLOBALS['numberGeoCode'].'');
+		//writeLog($fp, $url.'&cur_call='.$GLOBALS['numberGeoCode'].'');
 		$jsonGeo = file_get_contents($url, false, null);
 		$jsonGeo_d = json_decode($jsonGeo, true);
 
@@ -346,7 +382,7 @@ function getGeoInfo($fp, $lat, $lng)
 			$postalCode = null;
 			if (array_key_exists('status', $jsonGeo_d) && ($jsonGeo_d['status'] === 'OVER_QUERY_LIMIT'))
 			{
-				writeLog($fp, $jsonGeo_d['status'].'-'.$jsonGeo_d['error_message']);
+				//writeLog($fp, $jsonGeo_d['status'].'-'.$jsonGeo_d['error_message']);
 				$GLOBALS['isGeoCodeInfoBurn'] = true;
 			}
 			else
@@ -392,10 +428,6 @@ function getGeoInfo($fp, $lat, $lng)
 	{
 		return array(null, null, null);
 	}
-}
-
-function mysqlError($db, $results) {
-	if ($results === false) throw new Exception('Erreur BDD('.$db->errorCode().':'.$db->errorInfo()[2].')');
 }
 
 function startsWith($haystack, $needle) {
